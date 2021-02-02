@@ -32,11 +32,11 @@ class View extends Boundary[TicTacToe, Check] {
     } yield Cell(i, j, new JButton("_"))
   }
 
-  def cellInput(cell : Cell) : Observable[Check] = cell.button.eventObservable.map(_ => Check(cell.i, cell.j))
+  def checkObservable(cell : Cell) : Observable[Check] = cell.button.eventObservable.map(_ => Check(cell.i, cell.j))
 
   override def input: Observable[Check] = Observable.fromTask(cells)
     .flatMapIterable(a => a)
-    .map(cellInput)
+    .map(checkObservable)
     .merge
 
   override def render(world: TicTacToe): Task[Unit] = for {

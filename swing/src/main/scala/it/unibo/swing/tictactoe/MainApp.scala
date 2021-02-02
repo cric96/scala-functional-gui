@@ -19,6 +19,6 @@ object MainApp extends App {
       }
     }
   }
-  val loop = GameLoop(view, TicTacToe(X, Map.empty), 300.millis, gameLogic)
+  val loop = GameLoop(view, TicTacToe(X, Map.empty), 33.millis, gameLogic)
   loop.runSyncUnsafe()
 }
