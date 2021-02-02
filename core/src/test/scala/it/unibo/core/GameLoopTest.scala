@@ -1,10 +1,10 @@
 package it.unibo.core
 
-import it.unibo.core.GameLoop.UpdateFn
+import it.unibo.core.Controller.ProactiveConfig
 import it.unibo.core.GameLoopTest._
 import monix.eval.Task
+import monix.reactive.Observable
 import monix.reactive.subjects.PublishSubject
-import monix.reactive.{Observable, Pipe}
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -16,12 +16,12 @@ import scala.util.Success
 //
 class GameLoopTest extends AsyncFlatSpec with Matchers {
   import monix.execution.Scheduler.Implicits.global
-  val period = 100.millis
+  val period = ProactiveConfig(100.millis)
   val longSleep = 200.millis
   val initialWorld = 0
   "GameLoop" should "be lazy" in {
     val unsafeBoundary = new AttachPromiseBoundary[W, I]()
-    GameLoop[W, I](unsafeBoundary, initialWorld, period, UpdateFn.empty)
+    GameLoop[W, I](unsafeBoundary, initialWorld, UpdateFn.empty, period)
     Task.sleep(longSleep).runToFuture
       .map(_ => unsafeBoundary.promise.isCompleted shouldBe false)
   }
@@ -29,7 +29,7 @@ class GameLoopTest extends AsyncFlatSpec with Matchers {
 
   "GameLoop" should "be cancellable" in {
     val unsafeBoundary = new AttachPromiseBoundary[W, I]()
-    val gameLoop = GameLoop[W, I](unsafeBoundary, initialWorld, period, UpdateFn.empty)
+    val gameLoop = GameLoop[W, I](unsafeBoundary, initialWorld, UpdateFn.empty, period)
     val loop = gameLoop.runAsync(cb => {})
     val firstExecutionFuture = unsafeBoundary.promise
     val afterExecutionFuture = firstExecutionFuture.future.flatMap {
@@ -49,10 +49,10 @@ class GameLoopTest extends AsyncFlatSpec with Matchers {
     val unsafeBoundary = new AttachPromiseBoundary[W, I](Observable("act"))
     val updatedWorld = 10
     val input = "act"
-    val gameLoop = GameLoop[W, I](unsafeBoundary, initialWorld, period, (w, time, inputs) => inputs match {
+    val gameLoop = GameLoop[W, I](unsafeBoundary, initialWorld, (w, time, inputs) => inputs match {
       case `input` :: _ => Task.pure(updatedWorld)
       case _ => Task.pure(w)
-    })
+    }, period)
     gameLoop.runAsyncAndForget
     val firstExecutionFuture = unsafeBoundary.promise
     val updatedWorldFuture = firstExecutionFuture.future
@@ -80,9 +80,9 @@ object GameLoopTest {
   //Unsafe
   class AttachPromiseBoundary[W, I](val input : Observable[I] = Observable.empty) extends Boundary[W, I] {
     var promise : Promise[W] = Promise()
-    override def render(world: W): Task[Unit] = Task {
+    override def render(model: W): Task[Unit] = Task {
       if(!promise.isCompleted) {
-        promise.complete(Success(world))
+        promise.complete(Success(model))
       }
     }
     def clearPromise = promise = synchronized { Promise() }
