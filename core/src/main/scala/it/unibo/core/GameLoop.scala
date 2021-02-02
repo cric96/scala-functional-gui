@@ -16,9 +16,9 @@ object GameLoop {
   def apply[W, I](boundary: Boundary[W, I], initialWorld: W, timeTarget: FiniteDuration, updateLogic: UpdateFn[W, I]): Task[Unit] = {
     val concurrentQueue = ConcurrentQueue.unbounded[Task, I]()
     concurrentQueue.flatMap(queue => {
-      val sink = boundary.input.mapEval(data => queue.offer(data)).foreachL(a => {}) //task to sink the data
+      val sink = boundary.input.mapEval(data => queue.offer(data)).foreachL(_ => {}) //task to sink the data
       val gameLoop = loop(initialWorld, boundary, timeTarget, queue, updateLogic)
-      Task.parMap2(sink, gameLoop) {(a, b) => {}}
+      Task.parMap2(sink, gameLoop) {(_, _) => {}}
     })
   }
 
