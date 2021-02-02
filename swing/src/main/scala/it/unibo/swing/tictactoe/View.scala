@@ -40,8 +40,8 @@ class View extends Boundary[TicTacToe, Check] {
     .merge
 
   override def render(world: TicTacToe): Task[Unit] = for {
-    _ <- container.memoize
-    panel <- board.memoize
+    _ <- container
+    panel <- board
     _ <- of(panel.removeAll())
     _ <- renderButtons(panel, world.matrix)
     _ <- of(panel.repaint())
