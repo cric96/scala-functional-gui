@@ -2,7 +2,9 @@ package it.unibo.tictactoe
 
 import it.unibo.tictactoe.TicTacToe._
 
-case class TicTacToe(turn : Player, matrix : Map[Position, Player])
+sealed trait TicTacToe
+case class End(winner : Player, matrix : Map[Position, Player]) extends TicTacToe
+case class InProgress(turn : Player, matrix : Map[Position, Player]) extends TicTacToe
 
 object TicTacToe {
   type Position = (Int, Int)

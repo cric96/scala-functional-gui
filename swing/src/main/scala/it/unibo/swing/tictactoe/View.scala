@@ -4,14 +4,14 @@ import it.unibo.core.Boundary
 import it.unibo.swing.monadic._
 import it.unibo.swing.tictactoe.View.Cell
 import it.unibo.tictactoe.TicTacToe.{Player, Position}
-import it.unibo.tictactoe.{Hit, TicTacToe}
+import it.unibo.tictactoe.{Hit, InProgress}
 import monix.eval.Task
 import monix.reactive.Observable
 
 import java.awt.GridLayout
 import javax.swing.{JButton, JFrame, JPanel, WindowConstants}
 
-class View extends Boundary[TicTacToe, Hit] {
+class View extends Boundary[InProgress, Hit] {
   val container: Task[JFrame] = for {
     frame <- new JFrame("TicTacToe").monad
     _ <- task(frame.setSize(800, 600))
@@ -39,7 +39,7 @@ class View extends Boundary[TicTacToe, Hit] {
     .map(checkObservable)
     .merge
 
-  override def render(model: TicTacToe): Task[Unit] = {
+  override def render(model: InProgress): Task[Unit] = {
     for {
       frame <- container.asyncBoundary(swingScheduler) //go to AWT Thread
       panel <- board
