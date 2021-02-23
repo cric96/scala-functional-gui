@@ -1,17 +1,16 @@
 package it.unibo.swing.tictactoe
 
-import it.unibo.core.{Boundary, Controller, GameLoop, UpdateFn}
+import it.unibo.core.{Boundary, GameLoop, UpdateFn}
 import it.unibo.tictactoe.TicTacToe.X
-import it.unibo.tictactoe.{Hit, InProgress, TicTacToeOps}
-import monix.eval.Task
+import it.unibo.tictactoe.{Hit, InProgress, TicTacToe, TicTacToeOps}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
 object TicTacToeSwing extends App {
   implicit val global = monix.execution.Scheduler.global
-  val view : Boundary[InProgress, Hit]= new View()
-  val gameLogic : UpdateFn[InProgress, Hit] = {
+  val view : Boundary[TicTacToe, Hit]= new View()
+  val gameLogic : UpdateFn[TicTacToe, Hit] = {
     case (world, _, inputs) => {
       println(Thread.currentThread().getName)
       TicTacToeOps.processInput(world, inputs)
