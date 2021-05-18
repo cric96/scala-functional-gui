@@ -12,7 +12,6 @@ import java.awt.event.ActionListener
 import javax.swing.AbstractButton
 import javax.swing.SwingUtilities
 import scala.concurrent.ExecutionContext
-import scala.language.implicitConversions
 
 package object monadic {
 
@@ -20,6 +19,7 @@ package object monadic {
 
     def eventObservable: Observable[ActionEvent] = Observable.create(Unbounded) { out =>
       val cancellable = SingleAssignCancelable()
+      @annotation.nowarn
       val listener = new ActionListener { override def actionPerformed(e: ActionEvent): Unit = out.onNext(e) }
       component.addActionListener(listener)
       cancellable
@@ -29,7 +29,7 @@ package object monadic {
   implicit class RichComponent[E <: Component](component: E) {
     def monad: Task[E] = Task.evalOnce(component)
   }
-  def task(e: => Unit): Task[Unit] = Task(e)
+  def task[E](e: => E): Task[E] = Task(e)
 
   val swingScheduler: Scheduler = Scheduler.apply(new ExecutionContext {
     override def execute(runnable: Runnable): Unit = SwingUtilities.invokeAndWait(runnable)

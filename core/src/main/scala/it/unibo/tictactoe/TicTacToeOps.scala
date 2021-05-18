@@ -4,7 +4,6 @@ import it.unibo.tictactoe.TicTacToe.O
 import it.unibo.tictactoe.TicTacToe.Player
 import it.unibo.tictactoe.TicTacToe.Position
 import it.unibo.tictactoe.TicTacToe.X
-import monix.eval.Task
 
 object TicTacToeOps {
   private val gameSize = 3
@@ -12,27 +11,22 @@ object TicTacToeOps {
   def advanceWith(ticTacToe: TicTacToe, hit: Hit): TicTacToe = {
     val updateGame = for {
       _ <- rightPosition(ticTacToe, hit)
-    } yield (act(ticTacToe, hit))
+    } yield (updateBoard(ticTacToe, hit))
     updateGame.getOrElse(ticTacToe)
   }
 
-  def processInput(game: TicTacToe, inputs: Seq[Hit]): Task[TicTacToe] = inputs match {
-    case input :: others => processInput(advanceWith(game, input), others)
-    case empty => Task.pure(game)
-  }
+  def rightPosition(ticTacToe: TicTacToe, hit: Hit): Option[TicTacToe] =
+    Some(ticTacToe).collect { case game: InProgress => game }.filterNot(_.board.contains(hit.position))
 
-  private def rightPosition(ticTacToe: TicTacToe, hit: Hit): Option[TicTacToe] =
-    Some(ticTacToe).collect { case game: InProgress => game }.filterNot(_.matrix.contains(hit.position))
-
-  private def act(ticTacToe: TicTacToe, hit: Hit): TicTacToe = ticTacToe match {
+  def updateBoard(ticTacToe: TicTacToe, hit: Hit): TicTacToe = ticTacToe match {
     case ticTacToe: InProgress =>
       val updated = ticTacToe.copy(ticTacToe.turn.other, updateMatrix(ticTacToe, hit))
-      someoneWon(updated.matrix).map(winner => End(winner, updated.matrix)).getOrElse(updated)
+      someoneWon(updated.board).map(winner => End(winner, updated.board)).getOrElse(updated)
     case end => end
   }
 
   private def updateMatrix(ticTacToe: InProgress, hit: Hit): Map[Position, Player] =
-    ticTacToe.matrix + (hit.position -> ticTacToe.turn)
+    ticTacToe.board + (hit.position -> ticTacToe.turn)
 
   private def someoneWon(game: Map[Position, Player]): Option[Player] =
     checkColumns(game).orElse(checkDiagonals(game)).orElse(checkRows(game))
@@ -67,12 +61,4 @@ object TicTacToeOps {
 
   private def isWinner(p: Player, positions: Seq[Player]): Option[Player] =
     Some(p).filter(p => (0 until gameSize).map(_ => p) == positions)
-
-  implicit class RichPlayer(p: Player) {
-
-    def other: Player = p match {
-      case X => O
-      case O => X
-    }
-  }
 }

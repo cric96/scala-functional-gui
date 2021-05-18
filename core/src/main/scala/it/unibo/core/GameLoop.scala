@@ -4,7 +4,6 @@ import it.unibo.core.Controller.ProactiveConfig
 import monix.eval.Task
 
 object GameLoop {
-
   def apply[M, I](
       boundary: Boundary[M, I],
       initialWorld: M,

@@ -14,7 +14,7 @@ import scala.util.Success
 
 //NB! this is not used to show how to use GameLoop but it is used for testing internals.
 //In general, you can't access to the GameLoop state outside of it, is the root of all side effect.
-//
+
 class GameLoopTest extends AsyncFlatSpec with Matchers {
   import monix.execution.Scheduler.Implicits.global
   private val period = ProactiveConfig(100.millis)
@@ -22,7 +22,7 @@ class GameLoopTest extends AsyncFlatSpec with Matchers {
   private val initialWorld = 0
 
   "GameLoop" should "be lazy" in {
-    val unsafeBoundary = new AttachPromiseBoundary[W, I]()
+    val unsafeBoundary = new AttachPromiseBoundary()
     GameLoop[W, I](unsafeBoundary, initialWorld, UpdateFn.empty, period)
     Task
       .sleep(longSleep)
@@ -31,13 +31,13 @@ class GameLoopTest extends AsyncFlatSpec with Matchers {
   }
 
   "GameLoop" should "be cancellable" in {
-    val unsafeBoundary = new AttachPromiseBoundary[W, I]()
+    val unsafeBoundary = new AttachPromiseBoundary()
     val gameLoop = GameLoop[W, I](unsafeBoundary, initialWorld, UpdateFn.empty, period)
-    val loop = gameLoop.runAsync { cb => }
+    val loop = gameLoop.runAsync { _ => }
     val firstExecutionFuture = unsafeBoundary.promise
     val afterExecutionFuture = firstExecutionFuture.future.flatMap { _ =>
       loop.cancel() //stop the execution
-      unsafeBoundary.clearPromise //remove old promise
+      unsafeBoundary.clearPromise() //remove old promise
       unsafeBoundary.promise.future
     }
     Task
@@ -49,13 +49,13 @@ class GameLoopTest extends AsyncFlatSpec with Matchers {
 
   "GameLoop" should "should process inputs" in {
     val subject = PublishSubject[String]()
-    val unsafeBoundary = new AttachPromiseBoundary[W, I](Observable("act"))
+    val unsafeBoundary = new AttachPromiseBoundary(Observable("act"))
     val updatedWorld = 10
     val input = "act"
     val gameLoop = GameLoop[W, I](
       unsafeBoundary,
       initialWorld,
-      (w, time, inputs) =>
+      (w, _, inputs) =>
         inputs match {
           case `input` :: _ => Task.pure(updatedWorld)
           case _ => Task.pure(w)
@@ -73,7 +73,7 @@ class GameLoopTest extends AsyncFlatSpec with Matchers {
       .sleep(longSleep)
       .runToFuture
       .flatMap { _ =>
-        unsafeBoundary.clearPromise
+        unsafeBoundary.clearPromise()
         unsafeBoundary.promise.future
       }
       .flatMap { world =>
@@ -87,15 +87,18 @@ object GameLoopTest {
   type W = Int
   type I = String
 
-  //Unsafe
-  class AttachPromiseBoundary[W, I](val input: Observable[I] = Observable.empty) extends Boundary[W, I] {
+  //Unsafe because mutable
+  class AttachPromiseBoundary(val input: Observable[I] = Observable.empty) extends Boundary[W, I] {
     var promise: Promise[W] = Promise()
 
+    @annotation.nowarn
     override def render(model: W): Task[Unit] = Task {
       if (!promise.isCompleted) {
         promise.complete(Success(model))
+      } else {
+        promise
       }
     }
-    def clearPromise = promise = synchronized(Promise())
+    def clearPromise(): Unit = promise = synchronized(Promise())
   }
 }

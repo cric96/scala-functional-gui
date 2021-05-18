@@ -43,15 +43,15 @@ object Controller {
     timeTarget = config.timeTarget
     prevTime <- time(timeTarget.unit)
     _ <- boundary.render(model)
-    _ <- Task.shift //if the render has changed the thread, the loop return to the main thread
+    _ <- Task.shift //if the render has changed the thread, the loop returns to the main thread
     updatedModel <- updateLogic(model, prevTime, inputs.toList)
     newTime <- time(timeTarget.unit)
     temporalDiff = prevTime - newTime
     _ <-
-      if (temporalDiff.longValue() > timeTarget._1) {
-        Task.pure()
+      if (temporalDiff.longValue() > timeTarget.length) {
+        Task.pure {}
       } else {
-        Task.sleep(FiniteDuration(timeTarget._1 - temporalDiff, timeTarget.unit))
+        Task.sleep(FiniteDuration(timeTarget.length - temporalDiff, timeTarget.unit))
       }
     _ <- nonBlockingLoop[M, I](boundary, updatedModel, updateLogic, queue, config)
   } yield ()
@@ -63,7 +63,7 @@ object Controller {
       queue: ConcurrentQueue[Task, I]
   ): Task[Unit] = for {
     _ <- boundary.render(model)
-    _ <- Task.shift //if the render has changed the thread, the loop return to the main thread
+    _ <- Task.shift //if the render has changed the thread, the loop returns to the main thread
     input <- queue.poll
     current <- time(TimeUnit.MILLISECONDS)
     updatedModel <- updateLogic(model, current, Seq(input))

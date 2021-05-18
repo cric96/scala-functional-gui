@@ -15,30 +15,29 @@ import monix.reactive.Observable
 import java.awt.GridLayout
 import javax.swing._
 
-class View extends Boundary[TicTacToe, Hit] {
+class View(width: Int = 800, height: Int = 600) extends Boundary[TicTacToe, Hit] {
+  private val title = "TicTacToe"
+  private val empty = "_"
+  private def endGame(winner: TicTacToe.Player) = s"Game ended! winner : $winner"
 
   private lazy val container: Task[JFrame] = for {
-    frame <- new JFrame("TicTacToe").monad
-    _ <- task(frame.setSize(800, 600))
+    frame <- new JFrame(title).monad
+    _ <- task(frame.setSize(width, height))
     _ <- task(frame.setVisible(true))
     _ <- task(frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE))
   } yield frame
 
   private lazy val board: Task[JPanel] = for {
-    panel <- new JPanel(new GridLayout(3, 3)).monad
+    panel <- new JPanel(new GridLayout(TicTacToe.defaultSize, TicTacToe.defaultSize)).monad
     jframe <- container
     _ <- task(jframe.getContentPane.add(panel))
   } yield panel
 
-  private lazy val dialog: Task[JDialog] = for {
-    frame <- container
-  } yield (new JDialog(frame, "", true))
-
   private lazy val cells: Task[Seq[Cell]] = Task.evalOnce[Seq[Cell]] {
     for {
-      i <- 0 to 2
-      j <- 0 to 2
-    } yield Cell(i, j, new JButton("_"))
+      i <- 0 until TicTacToe.defaultSize
+      j <- 0 until TicTacToe.defaultSize
+    } yield Cell(i, j, new JButton(empty))
   }
 
   override def input: Observable[Hit] = Observable
@@ -47,14 +46,14 @@ class View extends Boundary[TicTacToe, Hit] {
     .map(checkObservable)
     .merge
 
-  private def checkObservable(cell: Cell): Observable[Hit] = cell.button.eventObservable.map(_ => Hit(cell.i, cell.j))
+  private def checkObservable(cell: Cell): Observable[Hit] = cell.button.eventObservable.map(_ => Hit((cell.i, cell.j)))
 
   override def render(model: TicTacToe): Task[Unit] = {
     for {
       frame <- container.asyncBoundary(swingScheduler) //go to AWT Thread
       panel <- board
       _ <- task(panel.removeAll())
-      _ <- renderButtons(panel, model.matrix)
+      _ <- renderButtons(panel, model.board)
       _ <- renderVictory(model)
       _ <- task(frame.repaint()) //force repaint
       _ <- task(frame.setVisible(true)) //force repaint
@@ -78,7 +77,7 @@ class View extends Boundary[TicTacToe, Hit] {
     case End(winner, _) =>
       for {
         frame <- container
-        _ <- task(frame.setTitle(s"Game ended! winner : $winner"))
+        _ <- task(frame.setTitle(endGame(winner)))
       } yield ()
   }
 }
