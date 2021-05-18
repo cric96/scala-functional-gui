@@ -5,7 +5,7 @@ ThisBuild / scalaVersion := "2.13.4"
 val commonSettings = Seq(
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.2.2" % "test",
-    "io.monix" %% "monix" % "3.3.0"
+    "io.monix" %%% "monix" % "3.3.0"
   ),
   //from https://tpolecat.github.io/2017/04/25/scalac-flags.html
   scalacOptions ++= Seq(
@@ -47,12 +47,24 @@ val commonSettings = Seq(
   )
 )
 
-lazy val core = (project in file("core"))
+lazy val core = (crossProject(JSPlatform, JVMPlatform) in file("core"))
   .settings(commonSettings)
 
 lazy val swing = (project in file("swing"))
   .settings(commonSettings)
-  .dependsOn(core)
+  .dependsOn(core.jvm)
+
+lazy val html = (project in file("html"))
+  .enablePlugins(ScalaJSPlugin)
+  .settings(
+    commonSettings,
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom" % "1.1.0",
+      "com.lihaoyi" %%% "scalatags" % "0.9.4"
+    ),
+    scalaJSUseMainModuleInitializer := true
+  )
+  .dependsOn(core.js)
 
 lazy val root = (project in file("."))
-  .aggregate(swing, core)
+  .aggregate(swing, core.jvm, core.js)

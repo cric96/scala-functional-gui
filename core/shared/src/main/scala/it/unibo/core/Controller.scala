@@ -26,7 +26,7 @@ object Controller {
       loopHandler: ConcurrentQueue[Task, I] => Task[Unit]
   ): Task[Unit] = {
     val concurrentQueue = ConcurrentQueue.unbounded[Task, I]()
-    concurrentQueue.flatMap { queue =>
+    boundary.init.flatMap(_ => concurrentQueue).flatMap { queue =>
       val sink = boundary.input.mapEval(data => queue.offer(data)).foreachL { _ => } //task to sink the data
       Task.parMap2(sink, loopHandler(queue)) { (_, _) => }
     }
