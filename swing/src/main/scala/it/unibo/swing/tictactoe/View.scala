@@ -3,15 +3,20 @@ package it.unibo.swing.tictactoe
 import it.unibo.core.Boundary
 import it.unibo.swing.monadic._
 import it.unibo.swing.tictactoe.View.Cell
-import it.unibo.tictactoe.TicTacToe.{Player, Position}
-import it.unibo.tictactoe.{End, Hit, InProgress, TicTacToe}
+import it.unibo.tictactoe.End
+import it.unibo.tictactoe.Hit
+import it.unibo.tictactoe.InProgress
+import it.unibo.tictactoe.TicTacToe
+import it.unibo.tictactoe.TicTacToe.Player
+import it.unibo.tictactoe.TicTacToe.Position
 import monix.eval.Task
 import monix.reactive.Observable
 
 import java.awt.GridLayout
-import javax.swing.{JButton, JDialog, JFrame, JOptionPane, JPanel, WindowConstants}
+import javax.swing._
 
 class View extends Boundary[TicTacToe, Hit] {
+
   private lazy val container: Task[JFrame] = for {
     frame <- new JFrame("TicTacToe").monad
     _ <- task(frame.setSize(800, 600))
@@ -36,10 +41,13 @@ class View extends Boundary[TicTacToe, Hit] {
     } yield Cell(i, j, new JButton("_"))
   }
 
-  override def input: Observable[Hit] = Observable.fromTask(cells)
+  override def input: Observable[Hit] = Observable
+    .fromTask(cells)
     .flatMapIterable(a => a)
     .map(checkObservable)
     .merge
+
+  private def checkObservable(cell: Cell): Observable[Hit] = cell.button.eventObservable.map(_ => Hit(cell.i, cell.j))
 
   override def render(model: TicTacToe): Task[Unit] = {
     for {
@@ -53,30 +61,28 @@ class View extends Boundary[TicTacToe, Hit] {
     } yield ()
   }
 
-
-  private def renderButtons(panel: JPanel, matrix : Map[Position, Player]) : Task[Unit] = for {
+  private def renderButtons(panel: JPanel, matrix: Map[Position, Player]): Task[Unit] = for {
     buttons <- cells
     _ <- task {
-      buttons.foreach {
-        case Cell(i, j, button) => matrix.get((i, j)).foreach(p => updateButton(button, p))
+      buttons.foreach { case Cell(i, j, button) =>
+        matrix.get((i, j)).foreach(p => updateButton(button, p))
       }
     }
-    _ <- task { buttons.map(_.button).foreach(panel.add) }
+    _ <- task(buttons.map(_.button).foreach(panel.add))
   } yield ()
 
-  private def renderVictory(toe: TicTacToe) : Task[Unit] = toe match {
-    case InProgress(_, _) => Task.pure { }
-    case End(winner, _) => for {
-      frame <- container
-      _ <- task { frame.setTitle(s"Game ended! winner : ${winner}")}
-    } yield()
+  private def updateButton(button: JButton, player: Player): Unit = button.setText(player.toString)
+
+  private def renderVictory(toe: TicTacToe): Task[Unit] = toe match {
+    case InProgress(_, _) => Task.pure {}
+    case End(winner, _) =>
+      for {
+        frame <- container
+        _ <- task(frame.setTitle(s"Game ended! winner : $winner"))
+      } yield ()
   }
-
-  private def updateButton(button : JButton, player: Player) : Unit = button.setText(player.toString)
-
-  private def checkObservable(cell : Cell) : Observable[Hit] = cell.button.eventObservable.map(_ => Hit(cell.i, cell.j))
 }
 
 object View {
-  case class Cell(i : Int, j : Int, button : JButton)
+  case class Cell(i: Int, j: Int, button: JButton)
 }
