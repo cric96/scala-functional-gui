@@ -2,6 +2,9 @@ package it.unibo.core
 
 import it.unibo.core.Controller.ProactiveConfig
 import monix.eval.Task
+import cats._
+import monix.execution.AsyncQueue
+import monix.reactive.Observable
 
 object GameLoop {
   def apply[M, I](
@@ -9,6 +12,6 @@ object GameLoop {
       initialWorld: M,
       updateLogic: UpdateFn[M, I],
       config: ProactiveConfig = ProactiveConfig()
-  ): Task[Unit] =
+  )(implicit transform: Observable ~> AsyncQueue): Task[Unit] =
     Controller.proactive(boundary, initialWorld, updateLogic, config)
 }

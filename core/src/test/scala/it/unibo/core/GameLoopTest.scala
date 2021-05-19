@@ -15,7 +15,7 @@ import scala.util.Success
 //NB! this is not used to show how to use GameLoop but it is used for testing internals.
 //In general, you can't access to the GameLoop state outside of it, is the root of all side effect.
 
-class GameLoopTest extends AsyncFlatSpec with Matchers {
+class GameLoopTest extends AsyncFlatSpec with Matchers with UnsafeMonadTransform {
   import monix.execution.Scheduler.Implicits.global
   private val period = ProactiveConfig(100.millis)
   private val longSleep = 200.millis
