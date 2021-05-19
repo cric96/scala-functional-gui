@@ -20,5 +20,4 @@ object TicTacToe {
   }
   case object X extends Player
   case object O extends Player
-
 }
