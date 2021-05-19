@@ -3,6 +3,9 @@ package it.unibo.core
 import it.unibo.core.Controller.ProactiveConfig
 import monix.eval.Task
 
+/**
+ * a facade of Controller.proactive
+ */
 object GameLoop {
   def apply[M, I](
       boundary: Boundary[M, I],

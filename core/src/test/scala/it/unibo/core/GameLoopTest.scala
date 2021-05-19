@@ -23,7 +23,7 @@ class GameLoopTest extends AsyncFlatSpec with Matchers {
 
   "GameLoop" should "be lazy" in {
     val unsafeBoundary = new AttachPromiseBoundary()
-    GameLoop[W, I](unsafeBoundary, initialWorld, UpdateFn.empty, period)
+    GameLoop[W, I](unsafeBoundary, initialWorld, UpdateFn.identity, period)
     Task
       .sleep(longSleep)
       .runToFuture
@@ -32,7 +32,7 @@ class GameLoopTest extends AsyncFlatSpec with Matchers {
 
   "GameLoop" should "be cancellable" in {
     val unsafeBoundary = new AttachPromiseBoundary()
-    val gameLoop = GameLoop[W, I](unsafeBoundary, initialWorld, UpdateFn.empty, period)
+    val gameLoop = GameLoop[W, I](unsafeBoundary, initialWorld, UpdateFn.identity, period)
     val loop = gameLoop.runAsync { _ => }
     val firstExecutionFuture = unsafeBoundary.promise
     val afterExecutionFuture = firstExecutionFuture.future.flatMap { _ =>
@@ -92,7 +92,7 @@ object GameLoopTest {
     var promise: Promise[W] = Promise()
 
     @annotation.nowarn
-    override def render(model: W): Task[Unit] = Task {
+    override def consume(model: W): Task[Unit] = Task {
       if (!promise.isCompleted) {
         promise.complete(Success(model))
       } else {

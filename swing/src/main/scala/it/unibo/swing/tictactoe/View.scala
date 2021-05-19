@@ -48,7 +48,7 @@ class View(width: Int = 800, height: Int = 600) extends Boundary[TicTacToe, Hit]
 
   private def checkObservable(cell: Cell): Observable[Hit] = cell.button.eventObservable.map(_ => Hit((cell.i, cell.j)))
 
-  override def render(model: TicTacToe): Task[Unit] = {
+  override def consume(model: TicTacToe): Task[Unit] = {
     for {
       frame <- container.asyncBoundary(swingScheduler) //go to AWT Thread
       panel <- board

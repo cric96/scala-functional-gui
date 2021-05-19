@@ -5,10 +5,10 @@ import it.unibo.tictactoe.TicTacToe._
 sealed trait TicTacToe {
   def board: Map[Position, Player]
 }
-case class End(winner: Player, board: Map[Position, Player]) extends TicTacToe
-case class InProgress(turn: Player, board: Map[Position, Player]) extends TicTacToe
-
 object TicTacToe {
+  case class End(winner: Player, board: Map[Position, Player]) extends TicTacToe
+  case class InProgress(turn: Player, board: Map[Position, Player]) extends TicTacToe
+
   val defaultSize: Int = 3
   type Position = (Int, Int)
 

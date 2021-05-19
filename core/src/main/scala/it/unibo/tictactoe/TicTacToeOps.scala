@@ -1,32 +1,29 @@
 package it.unibo.tictactoe
 
-import it.unibo.tictactoe.TicTacToe.O
-import it.unibo.tictactoe.TicTacToe.Player
-import it.unibo.tictactoe.TicTacToe.Position
-import it.unibo.tictactoe.TicTacToe.X
+import it.unibo.tictactoe.TicTacToe._
 
 object TicTacToeOps {
   private val gameSize = 3
 
-  def advanceWith(ticTacToe: TicTacToe, hit: Hit): TicTacToe = {
+  def advanceWith(ticTacToe: TicTacToe, hit: Position): TicTacToe = {
     val updateGame = for {
       _ <- rightPosition(ticTacToe, hit)
     } yield (updateBoard(ticTacToe, hit))
     updateGame.getOrElse(ticTacToe)
   }
 
-  def rightPosition(ticTacToe: TicTacToe, hit: Hit): Option[TicTacToe] =
-    Some(ticTacToe).collect { case game: InProgress => game }.filterNot(_.board.contains(hit.position))
+  def rightPosition(ticTacToe: TicTacToe, position: Position): Option[TicTacToe] =
+    Some(ticTacToe).collect { case game: InProgress => game }.filterNot(_.board.contains(position))
 
-  def updateBoard(ticTacToe: TicTacToe, hit: Hit): TicTacToe = ticTacToe match {
+  def updateBoard(ticTacToe: TicTacToe, position: Position): TicTacToe = ticTacToe match {
     case ticTacToe: InProgress =>
-      val updated = ticTacToe.copy(ticTacToe.turn.other, updateMatrix(ticTacToe, hit))
+      val updated = ticTacToe.copy(ticTacToe.turn.other, updateMatrix(ticTacToe, position))
       someoneWon(updated.board).map(winner => End(winner, updated.board)).getOrElse(updated)
     case end => end
   }
 
-  private def updateMatrix(ticTacToe: InProgress, hit: Hit): Map[Position, Player] =
-    ticTacToe.board + (hit.position -> ticTacToe.turn)
+  private def updateMatrix(ticTacToe: InProgress, position: Position): Map[Position, Player] =
+    ticTacToe.board + (position -> ticTacToe.turn)
 
   private def someoneWon(game: Map[Position, Player]): Option[Player] =
     checkColumns(game).orElse(checkDiagonals(game)).orElse(checkRows(game))
