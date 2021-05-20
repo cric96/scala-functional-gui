@@ -1,16 +1,12 @@
-package it.unibo.core
+package it.unibo
 
 import monix.eval.Task
 import monix.reactive.Observable
-/*
-improvements:
-  error managements: task could return Either[Unit, E] where E is something that represent a domain-specific error
-  consider to use Task[Input] instead of Observable[Input]. Transform different monad isn't always easy, mainly when
-  they are so different with each other.
- */
+
 /**
  * IO boundary outside of the model control. Here side effect happens. Example of this boundary could be: a console,
  * a graphical interface or a network interface.
+ *
  * @tparam Model the model structure that describes our application
  * @tparam Input the input root type accepted by the model
  */

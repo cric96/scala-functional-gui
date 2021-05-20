@@ -1,7 +1,8 @@
-package it.unibo.core
+package it.unibo.controller
 
-import it.unibo.core.Controller.ProactiveConfig
-import it.unibo.core.GameLoopTest._
+import it.unibo.Boundary
+import it.unibo.controller.Controller.ProactiveConfig
+import it.unibo.controller.GameLoopTest._
 import monix.eval.Task
 import monix.reactive.Observable
 import monix.reactive.subjects.PublishSubject

@@ -1,6 +1,7 @@
-package it.unibo.core
+package it.unibo.controller
 
-import it.unibo.core.Controller.ProactiveConfig
+import it.unibo.Boundary
+import it.unibo.controller.Controller.ProactiveConfig
 import monix.eval.Task
 
 /**

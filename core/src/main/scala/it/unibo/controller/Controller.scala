@@ -1,5 +1,6 @@
-package it.unibo.core
+package it.unibo.controller
 
+import it.unibo.Boundary
 import monix.catnap.ConcurrentQueue
 import monix.eval.Task
 

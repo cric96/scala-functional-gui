@@ -1,8 +1,8 @@
 package it.unibo.swing.tictactoe
 
-import it.unibo.core.Boundary
-import it.unibo.core.GameLoop
-import it.unibo.core.UpdateFn
+import it.unibo.Boundary
+import it.unibo.controller.GameLoop
+import it.unibo.controller.UpdateFn
 import it.unibo.tictactoe.TicTacToe.InProgress
 import it.unibo.tictactoe.TicTacToe.X
 import it.unibo.tictactoe.Hit

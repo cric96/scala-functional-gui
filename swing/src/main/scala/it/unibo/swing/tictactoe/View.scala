@@ -1,6 +1,6 @@
 package it.unibo.swing.tictactoe
 
-import it.unibo.core.Boundary
+import it.unibo.Boundary
 import it.unibo.swing.monadic._
 import it.unibo.swing.tictactoe.View.Cell
 import it.unibo.tictactoe.Hit
@@ -11,6 +11,7 @@ import it.unibo.tictactoe.TicTacToe.Player
 import it.unibo.tictactoe.TicTacToe.Position
 import monix.eval.Task
 import monix.reactive.Observable
+
 import java.awt.GridLayout
 import javax.swing._
 

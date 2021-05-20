@@ -1,9 +1,9 @@
 package it.unibo.swing.tictactoe
 
 import cats.effect.ExitCode
-import it.unibo.core.Boundary
-import it.unibo.core.GameLoop
-import it.unibo.core.UpdateFn
+import it.unibo.Boundary
+import it.unibo.controller.GameLoop
+import it.unibo.controller.UpdateFn
 import it.unibo.tictactoe.Hit
 import it.unibo.tictactoe.TicTacToe
 import it.unibo.tictactoe.TicTacToeInputProcess
