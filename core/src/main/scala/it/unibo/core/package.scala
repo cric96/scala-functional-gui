@@ -2,6 +2,9 @@ package it.unibo
 
 import monix.eval.Task
 
+/**
+ * hit: exist a Monad (State, or in the general case StateT) to describe the state manipulation, check it in https://typelevel.org/cats/datatypes/state.html
+ */
 package object core {
   /**
    * describe the model evolution in time. It is supposed to be functional, with

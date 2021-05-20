@@ -1,14 +1,16 @@
 package it.unibo.tictactoe
 
 import it.unibo.tictactoe.TicTacToe._
-
+/**
+ *  Game logic.
+ */
 object TicTacToeOps {
-  private val gameSize = 3
+  private val gameSize = TicTacToe.defaultSize
 
   def advanceWith(ticTacToe: TicTacToe, hit: Position): TicTacToe = {
     val updateGame = for {
       _ <- rightPosition(ticTacToe, hit)
-    } yield (updateBoard(ticTacToe, hit))
+    } yield updateBoard(ticTacToe, hit)
     updateGame.getOrElse(ticTacToe)
   }
 

@@ -1,6 +1,7 @@
 package it.unibo.core
 
 import monix.eval.Task
+import monix.execution.Scheduler
 import monix.reactive.Observable
 /*
 improvements:
@@ -23,7 +24,7 @@ trait Boundary[-Model, +Input] {
 
   /**
    * inspired by Functional Reactive Programming, input is seen as an ordered functional stream of data. It is well
-   * encoded by Observable abstraction given by Monix.
+   * encoded by Observable (https://monix.io/docs/current/reactive/observable.html) abstraction given by Monix.
    * @return the stream of input captured by the boundary.
    */
   def input: Observable[Input]

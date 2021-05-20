@@ -11,7 +11,6 @@ import it.unibo.tictactoe.TicTacToe.Player
 import it.unibo.tictactoe.TicTacToe.Position
 import monix.eval.Task
 import monix.reactive.Observable
-
 import java.awt.GridLayout
 import javax.swing._
 
@@ -21,16 +20,16 @@ class View(width: Int = 800, height: Int = 600) extends Boundary[TicTacToe, Hit]
   private def endGame(winner: TicTacToe.Player) = s"Game ended! winner : $winner"
 
   private lazy val container: Task[JFrame] = for {
-    frame <- new JFrame(title).monad
-    _ <- task(frame.setSize(width, height))
-    _ <- task(frame.setVisible(true))
-    _ <- task(frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE))
+    frame <- new JFrame(title).lift
+    _ <- io(frame.setSize(width, height))
+    _ <- io(frame.setVisible(true))
+    _ <- io(frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE))
   } yield frame
 
   private lazy val board: Task[JPanel] = for {
-    panel <- new JPanel(new GridLayout(TicTacToe.defaultSize, TicTacToe.defaultSize)).monad
+    panel <- new JPanel(new GridLayout(TicTacToe.defaultSize, TicTacToe.defaultSize)).lift
     jframe <- container
-    _ <- task(jframe.getContentPane.add(panel))
+    _ <- io(jframe.getContentPane.add(panel))
   } yield panel
 
   private lazy val cells: Task[Seq[Cell]] = Task.evalOnce[Seq[Cell]] {
@@ -46,28 +45,28 @@ class View(width: Int = 800, height: Int = 600) extends Boundary[TicTacToe, Hit]
     .map(checkObservable)
     .merge
 
-  private def checkObservable(cell: Cell): Observable[Hit] = cell.button.eventObservable.map(_ => Hit((cell.i, cell.j)))
-
   override def consume(model: TicTacToe): Task[Unit] = {
     for {
-      frame <- container.asyncBoundary(swingScheduler) //go to AWT Thread
+      frame <- container.asyncBoundary(swingScheduler) //go to AWT Thread, todo it is a view task or controller task?
       panel <- board
-      _ <- task(panel.removeAll())
+      _ <- io(panel.removeAll())
       _ <- renderButtons(panel, model.board)
       _ <- renderVictory(model)
-      _ <- task(frame.repaint()) //force repaint
-      _ <- task(frame.setVisible(true)) //force repaint
+      _ <- io(frame.repaint()) //force repaint
+      _ <- io(frame.setVisible(true)) //force repaint
     } yield ()
   }
 
+  private def checkObservable(cell: Cell): Observable[Hit] = cell.button.eventObservable.map(_ => Hit((cell.i, cell.j)))
+
   private def renderButtons(panel: JPanel, matrix: Map[Position, Player]): Task[Unit] = for {
     buttons <- cells
-    _ <- task {
+    _ <- io {
       buttons.foreach { case Cell(i, j, button) =>
         matrix.get((i, j)).foreach(p => updateButton(button, p))
       }
     }
-    _ <- task(buttons.map(_.button).foreach(panel.add))
+    _ <- io(buttons.map(_.button).foreach(panel.add))
   } yield ()
 
   private def updateButton(button: JButton, player: Player): Unit = button.setText(player.toString)
@@ -77,7 +76,7 @@ class View(width: Int = 800, height: Int = 600) extends Boundary[TicTacToe, Hit]
     case End(winner, _) =>
       for {
         frame <- container
-        _ <- task(frame.setTitle(endGame(winner)))
+        _ <- io(frame.setTitle(endGame(winner)))
       } yield ()
   }
 }

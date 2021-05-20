@@ -28,8 +28,8 @@ object Controller {
    * @param boundary external to the model, define the logic to consume it (i.e. how to visualize a snapshot).
    * @param model initial model state.
    * @param updateLogic define the model update progression
-   * @tparam Model the model structure that describes our application
-   * @tparam Input the input root type accepted from the model
+   * @tparam M the model structure that describes our application
+   * @tparam I the input root type accepted from the model
    * @return a Task associated with input-driven loop.
    */
   def reactive[M, I](boundary: Boundary[M, I], model: M, updateLogic: UpdateFn[M, I]): Task[Unit] =
@@ -46,8 +46,8 @@ object Controller {
    * @param model initial model state.
    * @param updateLogic define the model update progression
    * @param config define additional information to control the loop
-   * @tparam Model the model structure that describes our application
-   * @tparam Input the input root type accepted by the model
+   * @tparam M the model structure that describes our application
+   * @tparam I the input root type accepted by the model
    * @return a Task associated with input-driven loop.
    */
   def proactive[M, I](
@@ -66,7 +66,8 @@ object Controller {
     for {
       _ <- boundary.init()
       queue <- ConcurrentQueue.unbounded[Task, I]()
-      sink = boundary.input.mapEval(data => queue.offer(data)).foreachL { _ => } //task to sink the data
+      sink = boundary.input.mapEval(data => queue.offer(data)).foreachL { _ =>
+      } //task to sink the data from observable to queue
       task <- Task.parMap2(sink, loopHandler(queue)) { (_, _) => }
     } yield task
   }

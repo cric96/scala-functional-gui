@@ -4,7 +4,7 @@ import it.unibo.core.Controller.ProactiveConfig
 import monix.eval.Task
 
 /**
- * a facade of Controller.proactive
+ * a facade for Controller.proactive
  */
 object GameLoop {
   def apply[M, I](
