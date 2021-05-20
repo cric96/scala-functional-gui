@@ -8,7 +8,7 @@ import scala.concurrent.duration.DurationInt
 import scala.concurrent.duration.FiniteDuration
 
 /*
- * improvement: consider to introduce monad transformer instead of hide it inside the methods (as I done here)
+ * improvement: consider to introduce monad transformer instead of hide the transformation inside the methods (as I done here)
  */
 object Controller {
   /**

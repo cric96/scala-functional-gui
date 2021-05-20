@@ -1,7 +1,6 @@
 package it.unibo.core
 
 import monix.eval.Task
-import monix.execution.Scheduler
 import monix.reactive.Observable
 /*
 improvements:
