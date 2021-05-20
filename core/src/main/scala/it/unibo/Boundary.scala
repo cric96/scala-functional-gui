@@ -4,7 +4,7 @@ import monix.eval.Task
 import monix.reactive.Observable
 
 /**
- * IO boundary outside of the model control. Here side effect happens. Example of this boundary could be: a console,
+ * IO boundary outside of the model control. Here side effect happens. Examples of boundaries could be: a console,
  * a graphical interface or a network interface.
  *
  * @tparam Model the model structure that describes our application

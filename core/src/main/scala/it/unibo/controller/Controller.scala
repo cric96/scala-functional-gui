@@ -67,8 +67,9 @@ object Controller {
     for {
       _ <- boundary.init()
       queue <- ConcurrentQueue.unbounded[Task, I]()
-      sink = boundary.input.mapEval(data => queue.offer(data)).foreachL { _ =>
-      } //task to sink the data from observable to queue
+      sink = boundary.input
+        .mapEval(data => queue.offer(data))
+        .foreachL { _ => } //task to sink the data from observable to queue
       task <- Task.parMap2(sink, loopHandler(queue)) { (_, _) => }
     } yield task
   }
