@@ -19,7 +19,7 @@ Cats is the reference of functional programming in Scala. It is based on Categor
 [//]: # (TODO add more details)
 
 ## Abstractions used
-### [Task](https://monix.io/docs/current/eval/task.html):
+### [Task](https://monix.io/docs/current/eval/task.html)
 > Task is a data type for controlling possibly lazy & asynchronous computations, useful for controlling side-effects, avoiding nondeterminism and callback-hell.
 
 ### [Observable]()
