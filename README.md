@@ -27,3 +27,6 @@ Cats is the reference of functional programming in Scala. It is based on Categor
 > 
 Observable supports the [Functional Reactive Programming](http://wiki.haskell.org/Functional_Reactive_Programming). It seems to be a good way to manage GUI events (as done in [Elm](https://elm-lang.org/)).
 A good and purely functional alternative of Observable (only pull-based version) is [Iterant](https://monix.io/api/current/monix/tail/Iterant.html).
+
+# Interesting related projects
+- [Indigo](https://github.com/PurpleKingdomGames/indigo) : a functional game engine written in Scala. It levarages Scala.js to create in-browser games.
