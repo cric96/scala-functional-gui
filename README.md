@@ -1,6 +1,6 @@
 # Scala Functional GUI 
 
-![Build](https://github.com/cric96/scala-functional-gui/actions/workflows/scala.yml/badge.svg)
+![Build](https://github.com/cric96/scala-functional-gui/actions/workflows/scala.yml/badge.svg) [![Launch Scala Steward](https://github.com/cric96/scala-functional-gui/actions/workflows/scala-steward.yml/badge.svg)](https://github.com/cric96/scala-functional-gui/actions/workflows/scala-steward.yml)
 
 This repository contains an example of a functional GUI leveraging Monix `Observable` (for reactive GUI) and `Task` (as the abstraction of IO Monad).
 
