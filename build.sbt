@@ -5,7 +5,7 @@ ThisBuild / scalaVersion := "2.13.4"
 val commonSettings = Seq(
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.2.2" % "test",
-    "io.monix" %% "monix" % "3.3.0"
+    "io.monix" %% "monix" % "3.4.0"
   ),
   //from https://tpolecat.github.io/2017/04/25/scalac-flags.html
   scalacOptions ++= Seq(
