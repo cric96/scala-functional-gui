@@ -54,5 +54,7 @@ lazy val swing = (project in file("swing"))
   .settings(commonSettings)
   .dependsOn(core)
 
+lazy val oop = project in file("oop")
+
 lazy val root = (project in file("."))
   .aggregate(swing, core)
