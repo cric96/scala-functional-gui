@@ -18,6 +18,7 @@ public class TicTacToeGame implements Game {
     //it is good for you??
     @Override
     public void start() {
+        ticTacToeView.attach(this);
         ticTacToeView.render(ViewBoardFactory.fromTicTacToe(ticTacToe));
     }
 
