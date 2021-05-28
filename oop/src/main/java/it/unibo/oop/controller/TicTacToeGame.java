@@ -25,10 +25,9 @@ public class TicTacToeGame implements Game {
     @Override
     public void notify(final int x, final int y) {
         ticTacToe.update(x, y);
+        ticTacToeView.render(ViewBoardFactory.fromTicTacToe(ticTacToe));
         if(ticTacToe.isOver()) {
             ticTacToeView.winner(ticTacToe.getTurn().getStringRepresentation());
-        } else {
-            ticTacToeView.render(ViewBoardFactory.fromTicTacToe(ticTacToe));
         }
     }
 }

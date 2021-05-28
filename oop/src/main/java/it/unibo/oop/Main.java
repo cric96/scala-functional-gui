@@ -8,9 +8,13 @@ import it.unibo.oop.view.SwingView;
 import it.unibo.oop.view.TicTacToeView;
 
 public class Main {
+    private static final int WIDTH = 800;
+    private static final int HEIGHT = 600;
+
     public static void main(String[] args) {
-        final TicTacToeView view = SwingView.createAndShow();
-        final TicTacToe model = TicTacToeFactory.empty();
+        System.out.println("here...");
+        final TicTacToeView view = SwingView.createAndShow(WIDTH, HEIGHT);
+        final TicTacToe model = TicTacToeFactory.startO();
         final Game game = TicTacToeGame.playWith(model, view);
         game.start();
     }

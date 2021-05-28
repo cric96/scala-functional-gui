@@ -15,7 +15,7 @@ public class ViewBoardFactory {
             @Override
             public List<String> getRow(int row) {
                 //sorry, I can't avoid to use streams :))
-                return IntStream.rangeClosed(0, TicTacToe.SIZE)
+                return IntStream.range(0, TicTacToe.SIZE)
                         .mapToObj(col -> ticTacToe.get(row, col))
                         .map(Player::getStringRepresentation)
                         .collect(Collectors.toList());
@@ -23,7 +23,7 @@ public class ViewBoardFactory {
 
             @Override
             public List<List<String>> getAllBoard() {
-                return IntStream.rangeClosed(0, TicTacToe.SIZE)
+                return IntStream.range(0, TicTacToe.SIZE)
                         .mapToObj(this::getRow)
                         .collect(Collectors.toList());
             }
