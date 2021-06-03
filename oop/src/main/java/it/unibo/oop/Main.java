@@ -12,7 +12,6 @@ public class Main {
     private static final int HEIGHT = 600;
 
     public static void main(String[] args) {
-        System.out.println("here...");
         final TicTacToeView view = SwingView.createAndShow(WIDTH, HEIGHT);
         final TicTacToe model = TicTacToeFactory.startO();
         final Game game = TicTacToeGame.playWith(model, view);

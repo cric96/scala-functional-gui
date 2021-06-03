@@ -14,7 +14,6 @@ public class ViewBoardFactory {
         return new ViewBoard() {
             @Override
             public List<String> getRow(int row) {
-                //sorry, I can't avoid to use streams :))
                 return IntStream.range(0, TicTacToe.SIZE)
                         .mapToObj(col -> ticTacToe.get(row, col))
                         .map(Player::getStringRepresentation)
