@@ -33,12 +33,10 @@ class View(width: Int = 800, height: Int = 600) extends Boundary[TicTacToe, Hit]
     _ <- io(jframe.getContentPane.add(panel))
   } yield panel
 
-  private lazy val cells: Seq[Cell] = {
-    for {
-      i <- 0 until TicTacToe.defaultSize
-      j <- 0 until TicTacToe.defaultSize
-    } yield Cell(i, j, new JButton(empty))
-  }
+  private lazy val cells: Seq[Cell] = for {
+    i <- 0 until TicTacToe.defaultSize
+    j <- 0 until TicTacToe.defaultSize
+  } yield Cell(i, j, new JButton(empty))
 
   override lazy val input: Observable[Hit] = Observable
     .fromIterable(cells)
