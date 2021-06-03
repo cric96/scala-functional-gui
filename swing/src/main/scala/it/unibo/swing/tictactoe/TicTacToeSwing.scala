@@ -1,7 +1,7 @@
 package it.unibo.swing.tictactoe
 
 import it.unibo.Boundary
-import it.unibo.controller.GameLoop
+import it.unibo.controller.Controller
 import it.unibo.controller.UpdateFn
 import it.unibo.tictactoe.TicTacToe.InProgress
 import it.unibo.tictactoe.TicTacToe.X
@@ -18,8 +18,8 @@ object TicTacToeSwing extends App {
   val gameLogic: UpdateFn[TicTacToe, Hit] = UpdateFn.timeIndependent { case (world, inputs) =>
     TicTacToeInputProcess(world, inputs)
   }
-  val loop = GameLoop(view, InProgress(X, Map.empty), gameLogic)
-  //val loop = Controller.reactive(view, InProgress(X, Map.empty), gameLogic)
+  //val loop = GameLoop(view, InProgress(X, Map.empty), gameLogic)
+  val loop = Controller.reactive(view, InProgress(X, Map.empty), gameLogic)
   val started = loop.runToFuture(monix.execution.Scheduler.global)
   Await.result(started, Duration.Inf)
 }

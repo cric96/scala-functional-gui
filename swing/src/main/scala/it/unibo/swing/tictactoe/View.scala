@@ -33,17 +33,16 @@ class View(width: Int = 800, height: Int = 600) extends Boundary[TicTacToe, Hit]
     _ <- io(jframe.getContentPane.add(panel))
   } yield panel
 
-  private lazy val cells: Task[Seq[Cell]] = Task.evalOnce[Seq[Cell]] {
+  private lazy val cells: Seq[Cell] = {
     for {
       i <- 0 until TicTacToe.defaultSize
       j <- 0 until TicTacToe.defaultSize
     } yield Cell(i, j, new JButton(empty))
   }
 
-  override def input: Observable[Hit] = Observable
-    .fromTask(cells)
-    .flatMapIterable(a => a)
-    .map(checkObservable)
+  override lazy val input: Observable[Hit] = Observable
+    .fromIterable(cells)
+    .map(liftToObservable)
     .merge
 
   override def consume(model: TicTacToe): Task[Unit] = {
@@ -58,10 +57,11 @@ class View(width: Int = 800, height: Int = 600) extends Boundary[TicTacToe, Hit]
     } yield ()
   }
 
-  private def checkObservable(cell: Cell): Observable[Hit] = cell.button.eventObservable.map(_ => Hit((cell.i, cell.j)))
+  private def liftToObservable(cell: Cell): Observable[Hit] =
+    cell.button.eventObservable.map(_ => Hit((cell.i, cell.j)))
 
   private def renderButtons(panel: JPanel, matrix: Map[Position, Player]): Task[Unit] = for {
-    buttons <- cells
+    buttons <- io(cells)
     _ <- io {
       buttons.foreach { case Cell(i, j, button) =>
         matrix.get((i, j)).foreach(p => updateButton(button, p))

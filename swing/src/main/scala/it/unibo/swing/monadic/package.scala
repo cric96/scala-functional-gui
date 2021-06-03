@@ -38,8 +38,8 @@ package object monadic {
    * @param component  enriched object
    * @tparam E type of swing component
    */
-  implicit class RichComponent[E <: Component](component: E) {
-    def lift: Task[E] = Task.evalOnce(component)
+  implicit class RichComponent[E <: Component](component: E) { //we can use a type class (Liftable) with pure and unpure life (Task or Task.evalOnce).
+    def lift: Task[E] = Task(component)
   }
   //a facade, improve code writing
   def io[E](e: => E): Task[E] = Task(e)
