@@ -1,6 +1,6 @@
 ThisBuild / name := "functional-gui"
 ThisBuild / version := "0.1"
-ThisBuild / scalaVersion := "2.13.4"
+ThisBuild / scalaVersion := "2.13.8"
 
 val commonSettings = Seq(
   libraryDependencies ++= Seq(
